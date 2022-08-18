@@ -4,30 +4,15 @@ namespace App\Http\Controllers;
 
 
 
+use App\Models\Consultant;
 use App\Models\User;
 use App\Models\Appointment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
 {
-
-    //show all appointments
-//    public function index(){
-//        return view('appointments.index',[
-//           'appointments' => Appointment::all()
-//        ]);
-//    }
-
-
-    //show single appointments
-//    public function show(Appointment $appointment){
-//        return view('appointments.show',[
-//           'appointment'=>$appointment
-//        ]);
-//    }
-
-
     //manage appointments
     public function manage() {
         return view('appointments.manage', ['appointments' => auth()->user()->appointments()->get()]);
@@ -36,7 +21,7 @@ class AppointmentController extends Controller
 
     //show create form
     public function create(){
-        return view('appointments.create');
+        return view('appointments.create',['consultants'=>Consultant::all()]);
     }
 
     //show edit form
@@ -47,21 +32,31 @@ class AppointmentController extends Controller
 
 
     //Store appointment data
-    public function store(Request $request){
-        $formFields = $request->validate([
-            'start_time'=>'required',
-            'finish_time'=>'required',
-            'consultant_id'=>'required',
-            'description'=>'required',
-        ]);
+public function store(Request $request) {
+//        dd($request);
+    $attr = $request->validate([
+        'consultant' => 'required',
+        'date' => 'required',
+        'time' => 'required'
+    ]);
 
-        $formFields['user_id'] = auth()->id();
+    $attr['consultant_id'] = $attr['consultant'];
+    $attr['user_id'] = auth()->user()->getAuthIdentifier();
 
+    unset($attr['consultant']);
+    unset($attr['date']);
+    $startAt = Carbon::createFromFormat('m/d/Y, H:i:s', $attr['time']);
+    $endAt = $startAt;
+    $endAt = new Carbon($startAt);
+    $endAt->addHour();
+    $attr['start_time'] = $startAt;
+    $attr['finish_time'] = $endAt;
+    unset($attr['time']);
+    $appointment = new Appointment($attr);
+    $appointment->save();
 
-        Appointment::create($formFields);
-
-        return redirect('/');
-    }
+    return redirect('/')->with('message', 'Appointment submitted succesfully');
+}
 
     public function update(Request $request,Appointment $appointment){
         //make sure the user logged is the owner

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Consultant;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ConsultantController extends Controller
@@ -11,6 +13,24 @@ class ConsultantController extends Controller
         return view('consultants.index',[
            'consultants'=> Consultant::all()
         ]);
+    }
+
+    public function checkForAvailability($consultant_id,$date){
+        //following 24h interval to search
+        $interval = Carbon::createFromFormat('Y-m-d', $date);
+        $interval = $interval->add('day',1)->toDateString();
+
+        $appointments = Appointment::all()
+            ->where('consultant_id',$consultant_id)
+            ->where('start_time', '>=', $date)
+            ->where('finish_time', '<=', $interval);
+
+        $array = array();
+        foreach($appointments as $appointment){
+            array_push($array,$appointment);
+        }
+
+        return array_column($array,'start_time');
     }
 
     public function delete($id){

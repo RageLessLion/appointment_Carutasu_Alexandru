@@ -103,7 +103,7 @@
                 <div class="mt-8">
                     <p>
                         Don't have an account?
-                        <a href="/login" class="text-laravel"
+                        <a href="/Register" class="text-yellow-600"
                         >Register</a
                         >
                     </p>

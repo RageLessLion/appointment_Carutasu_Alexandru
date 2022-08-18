@@ -13,13 +13,15 @@ class Appointment extends Model
     public $table = 'appointments';
 //    public mixed $user_id;
 
-    protected $dates = [
-        'start_time',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'finish_time',
-    ];
+//    protected $dates = [
+//        'start_time',
+//        'created_at',
+//        'updated_at',
+//        'deleted_at',
+//        'finish_time',
+//    ];
+
+    protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $fillable = [
         'description',

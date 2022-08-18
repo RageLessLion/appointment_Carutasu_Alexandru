@@ -79,6 +79,9 @@ Route::get('/consultants/{consultant}/edit',[ConsultantController::class,'edit']
 //update consultant
 Route::put('/consultants/{consultant}',[ConsultantController::class,'update']);
 
+//route for ajax call
+Route::get('/consultants/availability/{consultant_id}/{date}',[ConsultantController::class,'checkForAvailability']);
+
 
 
 
